@@ -1,6 +1,8 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Collections;
 
 public class Part1 {
     ArrayList<String> input = new ArrayList<String>();
@@ -22,6 +24,7 @@ public class Part1 {
         }
     }
 
+    ArrayList<String> results = new ArrayList<>();
     private void check(){
         //12 red, 13 green, 14 blue
         for(String row : input){
@@ -30,43 +33,64 @@ public class Part1 {
             String value = row.substring(index);
             //System.out.println(value);
 
-            //Strip ; and whitespace
-            value = value.replaceAll(";", ",");
             value = value.replaceAll("\\s+", "");
-           // System.out.println(value);
 
             //Add to array
-            String[] items = value.split(",");
+            String[] items = value.split(";");
+
+            //2D array of values
+            ArrayList<ArrayList<String>> values = new ArrayList<>();
+            for(String item : items) {
+                values.add(new ArrayList<>(Arrays.asList(item.split(","))));
+            }
+
+
+            boolean valid = true;
+            index = 0;
 
             //Summing
-            int redSum = 0;
-            int greenSum = 0;
-            int blueSum = 0;
+            while(valid && index < values.size()) {
+                int redSum = 0;
+                int greenSum = 0;
+                int blueSum = 0;
 
-            for(String item : items){
-                if(item.contains("red")){
-                    redSum += Integer.parseInt(item.substring(0, 1));
+                //System.out.println(values.get(index));
+                for (String item : values.get(index)) {
+                    //System.out.println("Item: " + item);
+                    if (item.contains("red")) {
+                        item = item.replace("red", "");
+                        redSum += Integer.parseInt(item);
+                    } else if (item.contains("green")) {
+                        item = item.replace("green", "");
+                        greenSum += Integer.parseInt(item);
+                    } else if (item.contains("blue")) {
+                        item = item.replace("blue", "");
+                        blueSum += Integer.parseInt(item);
+                    }
+
+                    //Checking if valid
+                    if(redSum > 12){
+                        valid = false;
+                    }
+                    if(greenSum > 13){
+                        valid = false;
+                    }
+                    if(blueSum > 14){
+                        valid = false;
+                    }
                 }
-                else if(item.contains("green")){
-                    greenSum += Integer.parseInt(item.substring(0, 1));
-                }
-                else if(item.contains("blue")){
-                    blueSum += Integer.parseInt(item.substring(0, 1));
-                }
+                index++;
             }
-            System.out.println("Red: " + redSum + " Blue: " + blueSum + " Green: " + greenSum);
-            //Checking if valid
-            boolean valid = true;
-            if(redSum > 12){
-                valid = false;
-            }
-            if(greenSum > 13){
-                valid = false;
-            }
-            if(blueSum > 14){
-                valid = false;
-            }
-            System.out.println(valid);
+
+            results.add(String.valueOf(valid));
         }
+
+        int sum = 0;
+        for(int x = 0; x < results.size(); x++){
+            if(results.get(x).equals("true")){
+                sum += x+1;
+            }
+        }
+        System.out.println("Sum: " + sum);
     }
 }
